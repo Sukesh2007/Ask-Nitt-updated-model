@@ -21,7 +21,7 @@ route.post('/register', async(req, res) => {
         console.log(newUser)
     }catch(err){
         res.send({
-            msg: err
+            msg: "Error in adding"
         })
         console.log(err)
     }
@@ -51,7 +51,8 @@ route.post('/auth', async(req, res) => {
             })
         }
     }catch(err){
-        res.status(501).send({token: err})
+        console.log(err)
+        res.status(501).send("There is a error check in the console")
     }
     
 })
@@ -78,7 +79,8 @@ route.get('/auth/dashboard', (req, res) => {
             })
         }
     }catch(err){
-        res.status(501).send({msg: err})
+        console.log(err)
+        res.status(501).send({name: "", department: "", msg: "There is a error in dashboard"})
     }
 })
 
