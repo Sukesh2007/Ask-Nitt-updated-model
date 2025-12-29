@@ -84,4 +84,40 @@ route.get('/auth/dashboard', (req, res) => {
     }
 })
 
+route.get('/get/User', async(req, res) => {
+    try{
+        const {query: {rollno}} = req
+        const data = await User.findOne({rollno}, {name: 1, department: 1, followers: 1, following: 1})
+        if(data){
+            res.send({
+                username: data.name,
+                department: data.department,
+                followers: data.followers,
+                following: data.following,
+                msg: "Success"
+            })
+        }else{
+            res.send({
+                username: "-",
+            rollno: 0,
+            department: "-",
+            followers: 0,
+            following: 0,
+            msg: "Nill"
+            })
+        }
+
+    }catch(e){
+        res.status(500).send({
+            username: "-",
+            rollno: 0,
+            department: "-",
+            followers: 0,
+            following: 0,
+            msg: "Error"
+        })
+        console.log(e)
+    }
+})
+
 export default route
