@@ -21,7 +21,7 @@ route.post('/question/post', async(req, res)=>{
 route.get('/question/get', async(req , res) => {
     try{
         const {query: {rollno}} = req
-        const questions = await Question.find({rollno}, {tags: 1, question: 1, createdAt: 1, isSolved: 1})
+        const questions = await Question.find({rollno}, {tags: 1, question: 1, createdAt: 1, isSolved: 1, rollno: 1})
         const formatted = questions.map(t=> {
            const date = t.createdAt.getDate()
             const month = t.createdAt.getMonth()
@@ -67,9 +67,26 @@ route.patch('/question/mark/solved', async(req, res) => {
 route.get('/question/others/get', async(req, res) => {
     try{
         const {query: {rollno}} = req
-        const questions = await Question.find({rollno: {$ne : rollno}})
+        const questions = await Question.find({rollno: {$ne : rollno}}, {_id: 1, question: 1, tags: 1, createdAt: 1, isSolved: 1, rollno: 1})
+        questions.sort((a,b) => a.rollno - b.rollno)
         if(!questions) return res.send({msg: "No Questions", questions: []})
-        res.status(200).send({msg: "Success", questions: questions})
+        // res.status(200).send({msg: "Success", questions: questions})
+    const formatted = questions.map(t=> {
+            const days = new Date(t.createdAt)
+            t.createdAt = days.toLocaleString("en-IN", {"timeZone": "Asia/Kolkata"})
+           const date = t.createdAt.getDate()
+            const month = t.createdAt.getMonth()
+            const year = t.createdAt.getFullYear()
+            const hour = t.createdAt.getHours()
+            const minutes = t.createdAt.getMinutes()
+            const seconds = t.createdAt.getSeconds()
+            return (
+                {...t.toObject(),
+                   createdAt: `${date}/${month + 1}/${year} ${hour}:${minutes}:${seconds}`
+                }
+            )
+        })
+        return res.status(200).send({msg: "Success" , questions: formatted})
     }catch(err){
         console.log(err)
         return res.status(501).send({msg: "Error in the Server", questions: []})
